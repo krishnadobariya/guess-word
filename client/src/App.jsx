@@ -9,10 +9,8 @@ import Lobby from './components/Lobby';
 import GameBoard from './components/GameBoard';
 
 // Use production URL if deployed, else localhost
-// Replace with your live Render/Railway URL after deploying the backend
-const SOCKET_URL = window.location.hostname === 'localhost' 
-  ? 'http://localhost:5000' 
-  : 'https://draw-guess-backend.onrender.com'; 
+// Use VITE_SOCKET_URL from .env file, fallback to localhost for development
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
 
 
 function App() {

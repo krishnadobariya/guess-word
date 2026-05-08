@@ -15,11 +15,14 @@ function Canvas({ socket, roomId, isDrawer }) {
     const parent = canvas.parentElement;
     const { width, height } = parent.getBoundingClientRect();
     
+    if (width === 0 || height === 0) return;
+
     // Save current drawing
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = canvas.width;
     tempCanvas.height = canvas.height;
-    tempCanvas.getContext('2d').drawImage(canvas, 0, 0);
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(canvas, 0, 0);
 
     canvas.width = width;
     canvas.height = height;
@@ -31,7 +34,7 @@ function Canvas({ socket, roomId, isDrawer }) {
     ctx.lineWidth = lineWidth;
     contextRef.current = ctx;
 
-    // Restore drawing
+    // Restore drawing with scaling if needed
     ctx.drawImage(tempCanvas, 0, 0, width, height);
   };
 
@@ -66,7 +69,6 @@ function Canvas({ socket, roomId, isDrawer }) {
     };
   }, [socket]);
 
-  // Update context when state changes
   useEffect(() => {
     if (contextRef.current) {
       contextRef.current.strokeStyle = color;
@@ -81,14 +83,27 @@ function Canvas({ socket, roomId, isDrawer }) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
+
+    let clientX, clientY;
+    if (e.touches && e.touches[0]) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
     return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
     };
   };
 
   const startDrawing = (e) => {
     if (!isDrawer) return;
+    // Prevent scrolling on touch
+    if (e.type === 'touchstart') e.preventDefault();
+    
     const { x, y } = getCoordinates(e);
     
     if (tool === 'bucket') {
@@ -105,6 +120,8 @@ function Canvas({ socket, roomId, isDrawer }) {
 
   const draw = (e) => {
     if (!isDrawing || !isDrawer || tool === 'bucket') return;
+    if (e.type === 'touchmove') e.preventDefault();
+
     const { x, y } = getCoordinates(e);
     const ctx = contextRef.current;
     
@@ -216,7 +233,14 @@ function Canvas({ socket, roomId, isDrawer }) {
         onMouseMove={draw}
         onMouseUp={stopDrawing}
         onMouseLeave={stopDrawing}
-        style={{ cursor: isDrawer ? (tool === 'bucket' ? 'cell' : 'crosshair') : 'default', display: 'block' }}
+        onTouchStart={startDrawing}
+        onTouchMove={draw}
+        onTouchEnd={stopDrawing}
+        style={{ 
+          cursor: isDrawer ? (tool === 'bucket' ? 'cell' : 'crosshair') : 'default', 
+          display: 'block',
+          touchAction: 'none' // Crucial for mobile drawing
+        }}
       />
       
       {isDrawer && (
@@ -225,12 +249,12 @@ function Canvas({ socket, roomId, isDrawer }) {
             type="color" 
             value={color} 
             onChange={(e) => setColor(e.target.value)}
-            style={{ width: '2rem', height: '2rem', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+            style={{ width: '1.8rem', height: '1.8rem', border: 'none', borderRadius: '6px', cursor: 'pointer' }}
           />
-          <button className={`tool-btn ${tool === 'pencil' ? 'active' : ''}`} onClick={() => setTool('pencil')}><Pencil size={18} /></button>
-          <button className={`tool-btn ${tool === 'bucket' ? 'active' : ''}`} onClick={() => setTool('bucket')}><PaintBucket size={18} /></button>
-          <button className="tool-btn" onClick={() => { setColor('#ffffff'); setTool('pencil'); }}><Eraser size={18} /></button>
-          <button className="tool-btn" onClick={clearCanvas}><Trash2 size={18} /></button>
+          <button className={`tool-btn ${tool === 'pencil' ? 'active' : ''}`} onClick={() => setTool('pencil')}><Pencil size={16} /></button>
+          <button className={`tool-btn ${tool === 'bucket' ? 'active' : ''}`} onClick={() => setTool('bucket')}><PaintBucket size={16} /></button>
+          <button className="tool-btn" onClick={() => { setColor('#ffffff'); setTool('pencil'); }}><Eraser size={16} /></button>
+          <button className="tool-btn" onClick={clearCanvas}><Trash2 size={16} /></button>
         </div>
       )}
     </div>

@@ -17,13 +17,14 @@ function Canvas({ socket, roomId, isDrawer }) {
     
     if (width === 0 || height === 0) return;
 
-    // Save current drawing
+    // Create a temporary canvas to store the current image
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = canvas.width;
     tempCanvas.height = canvas.height;
     const tempCtx = tempCanvas.getContext('2d');
     tempCtx.drawImage(canvas, 0, 0);
 
+    // Set new dimensions
     canvas.width = width;
     canvas.height = height;
     
@@ -34,7 +35,7 @@ function Canvas({ socket, roomId, isDrawer }) {
     ctx.lineWidth = lineWidth;
     contextRef.current = ctx;
 
-    // Restore drawing with scaling if needed
+    // Restore the drawing
     ctx.drawImage(tempCanvas, 0, 0, width, height);
   };
 
@@ -42,9 +43,17 @@ function Canvas({ socket, roomId, isDrawer }) {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    socket.on('draw_data', ({ x, y, lastX, lastY, color, size, type }) => {
+    socket.on('draw_data', ({ nx, ny, lastNx, lastNy, color, size, type }) => {
       const ctx = contextRef.current;
-      if (!ctx) return;
+      const canvas = canvasRef.current;
+      if (!ctx || !canvas) return;
+
+      // Convert normalized (0-1) coordinates back to local pixels
+      const x = nx * canvas.width;
+      const y = ny * canvas.height;
+      const lastX = lastNx * canvas.width;
+      const lastY = lastNy * canvas.height;
+
       if (type === 'fill') {
         floodFill(x, y, color);
       } else {
@@ -81,9 +90,7 @@ function Canvas({ socket, roomId, isDrawer }) {
   const getCoordinates = (e) => {
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-
+    
     let clientX, clientY;
     if (e.touches && e.touches[0]) {
       clientX = e.touches[0].clientX;
@@ -93,22 +100,25 @@ function Canvas({ socket, roomId, isDrawer }) {
       clientY = e.clientY;
     }
 
+    // Returns local pixel coordinates
     return {
-      x: (clientX - rect.left) * scaleX,
-      y: (clientY - rect.top) * scaleY
+      x: (clientX - rect.left),
+      y: (clientY - rect.top)
     };
   };
 
   const startDrawing = (e) => {
     if (!isDrawer) return;
-    // Prevent scrolling on touch
     if (e.type === 'touchstart') e.preventDefault();
     
     const { x, y } = getCoordinates(e);
     
     if (tool === 'bucket') {
       floodFill(x, y, color);
-      socket.emit('draw', { roomId, data: { x, y, color, type: 'fill' } });
+      // Send normalized coordinates
+      const nx = x / canvasRef.current.offsetWidth;
+      const ny = y / canvasRef.current.offsetHeight;
+      socket.emit('draw', { roomId, data: { nx, ny, color, type: 'fill' } });
       return;
     }
 
@@ -128,12 +138,17 @@ function Canvas({ socket, roomId, isDrawer }) {
     ctx.lineTo(x, y);
     ctx.stroke();
 
+    // Send normalized coordinates (0 to 1) so it looks the same on all screens
+    const nx = x / canvasRef.current.offsetWidth;
+    const ny = y / canvasRef.current.offsetHeight;
+    const lastNx = lastPos.current.x / canvasRef.current.offsetWidth;
+    const lastNy = lastPos.current.y / canvasRef.current.offsetHeight;
+
     socket.emit('draw', {
       roomId,
       data: {
-        x, y,
-        lastX: lastPos.current.x,
-        lastY: lastPos.current.y,
+        nx, ny,
+        lastNx, lastNy,
         color: color,
         size: lineWidth,
         type: 'pencil'
@@ -239,7 +254,9 @@ function Canvas({ socket, roomId, isDrawer }) {
         style={{ 
           cursor: isDrawer ? (tool === 'bucket' ? 'cell' : 'crosshair') : 'default', 
           display: 'block',
-          touchAction: 'none' // Crucial for mobile drawing
+          touchAction: 'none',
+          width: '100%',
+          height: '100%'
         }}
       />
       

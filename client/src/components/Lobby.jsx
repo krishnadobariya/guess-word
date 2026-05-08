@@ -14,7 +14,7 @@ function Lobby({ onJoin, error }) {
   }, [mode]);
 
   return (
-    <div className="app-container" style={{ justifyContent: 'center' }}>
+    <div className="app-container" style={{ justifyContent: 'center', alignItems: 'center' }}>
       <div style={{ maxWidth: '460px', width: '95%' }} className="glass-panel animate-fade">
         {/* Tabs */}
         <div style={{ display: 'flex', background: 'rgba(0,0,0,0.2)' }}>

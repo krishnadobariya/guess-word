@@ -1,0 +1,260 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Outfit:wght@400;600;800&display=swap');
+
+:root {
+  --primary: #8b5cf6;
+  --secondary: #ec4899;
+  --accent: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --bg: #0f172a;
+  --card-bg: #1e293b;
+  --text: #f8fafc;
+  --text-dim: #94a3b8;
+  --p1: #ef4444; --p2: #3b82f6; --p3: #10b981;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg);
+  background-image: radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0, transparent 50%), 
+                    radial-gradient(at 50% 0%, rgba(236, 72, 153, 0.1) 0, transparent 50%);
+  color: var(--text);
+  min-height: 100vh;
+  overflow: hidden; /* Prevent body scroll */
+}
+
+.app-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Center for Lobby */
+  padding: 1rem;
+}
+
+.glass-panel {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.game-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  background: linear-gradient(to right, #a78bfa, #f472b6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+}
+
+.btn-game {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  font-family: 'Fredoka One', cursive;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+.btn-game:hover { transform: scale(1.02); filter: brightness(1.1); }
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
+  outline: none;
+}
+
+/* Grid Layout */
+.game-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr 300px;
+  gap: 1rem;
+  height: 100%;
+  width: 100%;
+  max-width: 1600px;
+}
+
+.sidebar-panel, .main-canvas-area, .chat-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: 100%;
+  min-width: 0; /* Fix flex child overflow */
+}
+
+/* Canvas Wrapper */
+.canvas-wrapper {
+  flex: 1;
+  background: white;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.canvas-header {
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Chat Styles */
+.chat-messages {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.msg-bubble {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  word-break: break-word;
+}
+
+.msg-correct {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent);
+  font-weight: 800;
+  text-align: center;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.chat-form {
+  padding: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(0,0,0,0.2);
+}
+
+/* Emoji Bar */
+.emoji-bar {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: rgba(30, 41, 59, 0.9);
+  padding: 0.4rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.emoji-btn {
+  background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: 0.2s;
+}
+.emoji-btn:hover { transform: scale(1.2); }
+
+/* Level Badge */
+.level-badge {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--warning);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.player-card {
+  padding: 0.75rem;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.player-card span, .player-card div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Toolbar */
+.tools-bar {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.tool-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  color: white;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.tool-btn.active { background: var(--primary); }
+
+/* Timer */
+.timer-box {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  font-weight: 800;
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* Modal */
+.modal-overlay {
+  position: absolute; inset: 0; background: rgba(15, 23, 42, 0.95);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 100;
+  padding: 2rem;
+}
+
+.word-choices { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
+
+@media (max-width: 1000px) {
+  .game-grid { grid-template-columns: 1fr; height: auto; overflow-y: auto; }
+  body { overflow-y: auto; }
+  .app-container { height: auto; }
+  .reaction-container { display: none; }
+}
+
+/* Animations */
+@keyframes floatUp {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-300px) translateX(var(--random-x)); opacity: 0; }
+}
+.floating-emoji { position: absolute; bottom: 0; font-size: 2.5rem; animation: floatUp 3s forwards; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); z-index: 10000; }
+.reaction-container { position: fixed; bottom: 100px; right: 320px; width: 150px; height: 400px; pointer-events: none; z-index: 9999; }
+
+.shake { animation: shake 0.5s; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}

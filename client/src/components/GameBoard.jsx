@@ -224,18 +224,36 @@ function GameBoard({ socket, user, roomId, players, onStart }) {
                       
                       <div style={{ marginBottom: '1rem' }}>
                          <label style={{ fontSize: '0.7rem', color: 'var(--text-dim)', display: 'block', marginBottom: '0.4rem' }}>WORD DICTIONARY</label>
-                         <div style={{ display: 'flex', gap: '0.5rem' }}>
+                         <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                             <button 
                               onClick={() => updateSettings({ wordType: 'english' })}
-                              className={`tool-btn ${settings.wordType === 'english' ? 'active' : ''}`} style={{ flex: 1, height: '40px' }}
+                              className={`tool-btn ${settings.wordType === 'english' ? 'active' : ''}`} style={{ flex: '1 0 30%', height: '40px' }}
                             >
-                              <Globe size={14} style={{ marginRight: '4px' }} /> EN
+                              EN
                             </button>
                             <button 
                               onClick={() => updateSettings({ wordType: 'indian' })}
-                              className={`tool-btn ${settings.wordType === 'indian' ? 'active' : ''}`} style={{ flex: 1, height: '40px' }}
+                              className={`tool-btn ${settings.wordType === 'indian' ? 'active' : ''}`} style={{ flex: '1 0 30%', height: '40px' }}
                             >
-                              🇮🇳 IND
+                              🇮🇳
+                            </button>
+                            <button 
+                              onClick={() => updateSettings({ wordType: 'animals' })}
+                              className={`tool-btn ${settings.wordType === 'animals' ? 'active' : ''}`} style={{ flex: '1 0 30%', height: '40px' }}
+                            >
+                              🐾
+                            </button>
+                            <button 
+                              onClick={() => updateSettings({ wordType: 'food' })}
+                              className={`tool-btn ${settings.wordType === 'food' ? 'active' : ''}`} style={{ flex: '1 0 45%', height: '40px' }}
+                            >
+                              🍕
+                            </button>
+                            <button 
+                              onClick={() => updateSettings({ wordType: 'movies' })}
+                              className={`tool-btn ${settings.wordType === 'movies' ? 'active' : ''}`} style={{ flex: '1 0 45%', height: '40px' }}
+                            >
+                              🎬
                             </button>
                          </div>
                       </div>

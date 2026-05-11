@@ -16,18 +16,7 @@ const io = new Server(server, {
 
 const rooms = {};
 
-const wordLists = {
-  english: {
-    easy: ['apple', 'cat', 'dog', 'sun', 'tree', 'book', 'fish', 'ball', 'cake', 'star'],
-    medium: ['guitar', 'bicycle', 'elephant', 'laptop', 'mountain', 'pizza', 'umbrella', 'volcano', 'penguin', 'robot'],
-    hard: ['architecture', 'symphony', 'renaissance', 'microscope', 'galaxy', 'equilibrium', 'metamorphosis', 'hieroglyphics', 'labyrinth', 'orchestra']
-  },
-  indian: {
-    easy: ['samosa', 'chai', 'mango', 'peacock', 'lotus', 'temple', 'diya', 'rangoli', 'turban', 'henna'],
-    medium: ['rickshaw', 'cricket', 'bollywood', 'himalayas', 'taj mahal', 'elephant', 'bangle', 'curry', 'monsoon', 'kabaddi'],
-    hard: ['bharatnatyam', 'kathakali', 'ganesh chaturthi', 'ayurveda', 'dharamshala', 'varanasi', 'yoga', 'satyameva jayate', 'ashoka chakra', 'bhagavad gita']
-  }
-};
+const wordLists = require('./wordLists');
 
 function getWordChoices(type = 'english') {
   const list = wordLists[type] || wordLists.english;
